@@ -1,0 +1,12 @@
+mat-card-actions {
+    display: flex;
+    justify-content: center;
+}
+
+mat-card {
+    padding-bottom: 50px;
+}
+
+.options {
+    margin-bottom: 50px;
+}

@@ -1,4 +1,4 @@
-import { AbstractControl, ValidatorFn } from '@angular/forms';
+import {AbstractControl, ValidatorFn} from '@angular/forms';
 
 export function urlValidator(): ValidatorFn {
   return (url: AbstractControl): { [key: string]: any } | null => {
@@ -12,6 +12,6 @@ export function urlValidator(): ValidatorFn {
     } else if (url.value.includes('https://ceylonstream.com/tvshows/')) {
       forbidden = false;
     }
-    return forbidden ? { forbiddenName: { value: url.value } } : null;
+    return forbidden ? {forbiddenName: {value: url.value}} : null;
   };
 }

@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { urlValidator } from './app.validators';
-import { AutoCompleteResult, X265SearchResults, X265SearchResult } from './types';
+import {Component} from '@angular/core';
+import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {HttpClient} from '@angular/common/http';
+import {urlValidator} from './app.validators';
+import {AutoCompleteResult, X265SearchResults, X265SearchResult} from './types';
 
 @Component({
   selector: 'app-root',
@@ -16,12 +16,12 @@ export class AppComponent {
   showProgressBar = false;
   autoCompleteSearchResult: AutoCompleteResult[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   urlForm = new FormGroup({
     url: new FormControl('', [Validators.required, urlValidator()]),
   });
-
 
   search(event: any): void {
     this.autoCompleteSearchResult = [];
@@ -30,40 +30,30 @@ export class AppComponent {
     const ceylonStreamURL = `https://ceylonstream.com/wp-json/dooplay/search/?keyword=${searchTerm}&nonce=58c229ef9e`;
 
     this.http.get<X265SearchResults>(x265URL).subscribe(
-      data => {
-        for (const result in data) {
-          const x265Result: X265SearchResult = data[result];
-          const autoCompleteResult: AutoCompleteResult = {
-            title: x265Result.title,
-            url: x265Result.url,
-            imdb: x265Result.extra.imdb,
-            year: x265Result.extra.date,
-            img: x265Result.img,
-            site: 'X265LK'
-          };
-          this.autoCompleteSearchResult.push(autoCompleteResult);
-        }
-      },
+      data => this.addToAutoComplete(data, 'X265LK'),
       err => console.log(err)
     );
 
     this.http.get<X265SearchResults>(ceylonStreamURL).subscribe(
-      data => {
-        for (const result in data) {
-          const ceyloanStreamResult: X265SearchResult = data[result];
-          const autoCompleteResult: AutoCompleteResult = {
-            title: ceyloanStreamResult.title,
-            url: ceyloanStreamResult.url,
-            imdb: ceyloanStreamResult.extra.imdb,
-            year: ceyloanStreamResult.extra.date,
-            img: ceyloanStreamResult.img,
-            site: 'CeylonStream'
-          };
-          this.autoCompleteSearchResult.push(autoCompleteResult);
-        }
-      },
+      data => this.addToAutoComplete(data, 'CeylonStream'),
       err => console.log(err)
     );
+  }
+
+  addToAutoComplete(data: X265SearchResults, siteName: 'X265LK' | 'CeylonStream'): void {
+    for (const result in data) {
+      const ceylonStreamResult: X265SearchResult = data[result];
+
+      const autoCompleteResult: AutoCompleteResult = {
+        title: ceylonStreamResult.title,
+        url: ceylonStreamResult.url,
+        imdb: ceylonStreamResult.extra.imdb,
+        year: ceylonStreamResult.extra.date,
+        img: ceylonStreamResult.img,
+        site: siteName
+      };
+      this.autoCompleteSearchResult.push(autoCompleteResult);
+    }
   }
 
   clickOnAutoComplete(url: string): void {
@@ -81,7 +71,7 @@ export class AppComponent {
       this.status = 'tvshows';
     }
 
-    this.http.get(url, { responseType: 'text' }).subscribe(
+    this.http.get(url, {responseType: 'text'}).subscribe(
       (data) => {
         this.docObject = new DOMParser().parseFromString(data, 'text/html');
         this.showProgressBar = false;

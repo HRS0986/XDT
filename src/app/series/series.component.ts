@@ -1,6 +1,6 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Season, Episode } from '../types';
+import {Component, Input, OnChanges} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Season, Episode} from '../types';
 import {
   MatSnackBar,
   MatSnackBarHorizontalPosition,
@@ -19,65 +19,76 @@ export class SeriesComponent implements OnChanges {
   @Input() docObjectTV!: Document;
   @Input() showProgressBar!: boolean;
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
-
   seasons: Season[] = [];
   seasonNames: Array<string[]> = [];
   selectedEpisodeIDs: Array<number[]> = [];
   seriesTitle!: string;
 
+  constructor(private http: HttpClient, private snackBar: MatSnackBar) {
+  }
+
   ngOnChanges(): void {
+    this.selectedEpisodeIDs = [];
+    this.seasonNames = [];
+    this.seasons = [];
+
     if (this.docObjectTV !== undefined) {
-      const seasonsData = this.docObjectTV.getElementById(
-        'seasons'
-      ) as HTMLDivElement;
-      const seasonDivs = seasonsData.getElementsByClassName('se-c');
-      this.selectedEpisodeIDs = [];
-      this.seasonNames = [];
-      this.seasons = [];
+      this.scrapeData();
+    }
+  }
 
-      const titleSection = this.docObjectTV.getElementsByClassName(
-        'sheader'
-      )[0];
-      const titleDiv = titleSection.getElementsByClassName('data')[0];
-      const title = titleDiv.getElementsByTagName('h1')[0].textContent;
-      this.seriesTitle = title ? title : 'Series Title';
+  scrapeData(): void {
+    const seasonsData = this.docObjectTV.getElementById(
+      'seasons'
+    ) as HTMLDivElement;
+    const seasonDivs = seasonsData.getElementsByClassName('se-c');
 
-      for (const div in seasonDivs) {
-        const seasonEpisodes: string[] = [];
-        const seasonDiv = seasonDivs[div];
+    this.seriesTitle = this.getSeriesTitle();
 
-        if (typeof seasonDiv === 'object') {
-          const seasonID: number[] = [];
-          this.selectedEpisodeIDs.push(seasonID);
-          const numberDiv = seasonDiv.getElementsByClassName('se-q')[0];
-          const seasonNumber = numberDiv.getElementsByTagName('span')[0]
-            .textContent as string;
-          const episodesList = seasonDiv.getElementsByTagName('li');
-          const episodes: Episode[] = [];
+    for (const div in seasonDivs) {
+      const seasonEpisodes: string[] = [];
+      const seasonDiv = seasonDivs[div];
 
-          for (const ep in episodesList) {
-            const episode = episodesList[ep];
+      if (typeof seasonDiv === 'object') {
+        const seasonID: number[] = [];
+        const episodes: Episode[] = [];
+        this.selectedEpisodeIDs.push(seasonID);
+        const numberDiv = seasonDiv.getElementsByClassName('se-q')[0];
+        const seasonNumber = numberDiv.getElementsByTagName('span')[0]
+          .textContent as string;
+        const episodesList = seasonDiv.getElementsByTagName('li');
 
-            if (typeof episode == 'object') {
-              let epNumber = episode.getElementsByClassName('numerando')[0]
-                .textContent as string;
-              const epiLInk = episode.getElementsByTagName('a')[0].href;
-              if (epiLInk.includes('ceylonstream')) {
-                  epNumber += ' - Complete Season MEGA Folder';
-                }
-              const epi: Episode = { episodeNumber: epNumber, url: epiLInk };
-              seasonEpisodes.push(epNumber);
-              episodes.push(epi);
-            }
+        for (const ep in episodesList) {
+          const episode = episodesList[ep];
+
+          if (typeof episode == 'object') {
+            const epi = this.getEpisodeObject(episode);
+            seasonEpisodes.push(epi.episodeNumber);
+            episodes.push(epi);
           }
-
-          const season: Season = { seasonNumber, episodes };
-          this.seasons.push(season);
-          this.seasonNames.push(seasonEpisodes);
         }
+
+        const season: Season = {seasonNumber, episodes};
+        this.seasons.push(season);
+        this.seasonNames.push(seasonEpisodes);
       }
     }
+  }
+
+  getEpisodeObject(episodeData: HTMLLIElement): Episode {
+    let epNumber = episodeData.getElementsByClassName('numerando')[0]
+      .textContent as string;
+    const epiLInk = episodeData.getElementsByTagName('a')[0].href;
+    if (epiLInk.includes('ceylonstream')) {
+      epNumber += ' - Complete Season MEGA Folder';
+    }
+    return {episodeNumber: epNumber, url: epiLInk};
+  }
+
+  getSeriesTitle(): string {
+    const titleSection = this.docObjectTV.getElementsByClassName('sheader')[0];
+    const titleDiv = titleSection.getElementsByClassName('data')[0];
+    return titleDiv.getElementsByTagName('h1')[0].textContent as string;
   }
 
   selectAll(checked: boolean, i: number): void {
@@ -93,6 +104,16 @@ export class SeriesComponent implements OnChanges {
     }
   }
 
+  getDownloadLink(docObject: Document): string {
+    const copiesData = docObject.getElementsByClassName(
+      'fix-table'
+    )[0];
+    const tbody = copiesData.getElementsByTagName('tbody')[0];
+    const copyRow = tbody.getElementsByTagName('tr')[0];
+    const dataRow = copyRow.getElementsByTagName('td')[0];
+    return dataRow.getElementsByTagName('a')[0].href;
+  }
+
   downloadCopies(): void {
     let epCount = 0;
     this.selectedEpisodeIDs.forEach((season: number[]) => {
@@ -105,22 +126,14 @@ export class SeriesComponent implements OnChanges {
       this.openSnackBar('Starting Download...');
       this.selectedEpisodeIDs.forEach((season: number[]) => {
         const seasonNo = this.selectedEpisodeIDs.indexOf(season);
+
         season.forEach((ep: number) => {
           const episodes = this.seasons[seasonNo].episodes;
-          this.http.get(episodes[ep].url, { responseType: 'text' }).subscribe(
+          this.http.get(episodes[ep].url, {responseType: 'text'}).subscribe(
             (data: string) => {
-              const docObject = new DOMParser().parseFromString(
-                data,
-                'text/html'
-              );
-              const copiesData = docObject.getElementsByClassName(
-                'fix-table'
-              )[0];
-              const tbody = copiesData.getElementsByTagName('tbody')[0];
-              const copyRow = tbody.getElementsByTagName('tr')[0];
-              const dataRow = copyRow.getElementsByTagName('td')[0];
-              const copyLink = dataRow.getElementsByTagName('a')[0].href;
-              this.http.get(copyLink, { responseType: 'text' }).subscribe(
+              const docObject = new DOMParser().parseFromString(data, 'text/html');
+              const copyLink = this.getDownloadLink(docObject);
+              this.http.get(copyLink, {responseType: 'text'}).subscribe(
                 (data: string) => {
                   const docObj = new DOMParser().parseFromString(
                     data,

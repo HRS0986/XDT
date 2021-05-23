@@ -9,8 +9,8 @@
     >
       <div id="search-box">
         <mat-form-field color="accent">
-          <mat-label >Enter URL or Search</mat-label>
-          <input          
+          <mat-label>Enter URL or Search</mat-label>
+          <input
             type="text"
             aria-label="Enter URL or Search"
             matInput
@@ -27,28 +27,28 @@
               [value]="result.title"
               style="height: 90px"
             >
-            <div class="result">
-              <div class="img">
-                <img
-                class="example-option-img"
-                aria-hidden
-                [src]="result.img"
-                height="85"
-                width="60"
-              />
-              </div>
-              <div class="detail">
-                <div class="data">
-                  <span>{{ result.title }}</span> |
-                <small>Year: {{ result.year }}</small> |
-                <small *ngIf="result.imdb">IMDb: {{ result.imdb }}</small> |
+              <div class="result">
+                <div class="img">
+                  <img
+                    class="example-option-img"
+                    aria-hidden
+                    [src]="result.img"
+                    height="85"
+                    width="60"
+                  />
                 </div>
-                <div class="site">
-                  <small> In {{ result.site }}</small> 
-                </div>               
-              </div>              
-            </div>
-              
+                <div class="detail">
+                  <div class="data">
+                    <span>{{ result.title }}</span> |
+                    <small>Year: {{ result.year }}</small> |
+                    <small *ngIf="result.imdb">IMDb: {{ result.imdb }}</small> |
+                  </div>
+                  <div class="site">
+                    <small> In {{ result.site }}</small>
+                  </div>
+                </div>
+              </div>
+
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -57,7 +57,7 @@
 
       <div class="search-btn">
         <button
-          mat-raised-button          
+          mat-raised-button
           [disabled]="!urlForm.valid"
           color="accent"
           type="submit"
@@ -70,10 +70,10 @@
   </div>
   <!--search-section div-->
 
-  <br />
-  <br />
+  <br/>
+  <br/>
   <div [hidden]="!showProgressBar">
-  <mat-spinner color="primary"></mat-spinner>
+    <mat-spinner color="primary"></mat-spinner>
   </div>
 </div>
 <!--wrapper div-->

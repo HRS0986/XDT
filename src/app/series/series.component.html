@@ -1,45 +1,47 @@
 <div class="copy-select-section" *ngIf="!showProgressBar">
-    <div class="options">
-      <h2>Select Episodes To Download {{ seriesTitle }}</h2>
-  
-      <mat-card style="background-color: #424242; color: #dfe6e9">
-        <mat-card-content>
-            
-          <mat-accordion style="color: #dfe6e9">
-            <mat-expansion-panel style="background-color: #424242;" *ngFor="let season of seasonNames; index as i">
-  
-              <mat-expansion-panel-header>
-                <mat-panel-title style="color: #dfe6e9" > Season {{ i + 1 }} </mat-panel-title>
-                <mat-panel-description>
-                 <mat-checkbox style="color: #dfe6e9;" #all (change)='selectAll(all.checked, i)' color="accent">Select All</mat-checkbox>
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-  
-              <mat-selection-list style="color: #dfe6e9" ngFor="let episode of season" #copies [(ngModel)]="selectedEpisodeIDs[i]">
-                <mat-list-option
-                style="color: #dfe6e9" 
+  <div class="options">
+    <h2>Select Episodes To Download {{ seriesTitle }}</h2>
+
+    <mat-card style="background-color: #424242; color: #dfe6e9">
+      <mat-card-content>
+
+        <mat-accordion style="color: #dfe6e9">
+          <mat-expansion-panel style="background-color: #424242;" *ngFor="let season of seasonNames; index as i">
+
+            <mat-expansion-panel-header>
+              <mat-panel-title style="color: #dfe6e9"> Season {{ i + 1 }} </mat-panel-title>
+              <mat-panel-description>
+                <mat-checkbox style="color: #dfe6e9;" #all (change)='selectAll(all.checked, i)' color="accent">Select
+                  All
+                </mat-checkbox>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <mat-selection-list style="color: #dfe6e9" ngFor="let episode of season" #copies
+                                [(ngModel)]="selectedEpisodeIDs[i]">
+              <mat-list-option
+                style="color: #dfe6e9"
                 color="accent"
-                  *ngFor="let episode of season; index as j"
-                  [value]="j"
-                >
-                  {{ seriesTitle }} &nbsp; {{ episode }}
-                </mat-list-option>
-              </mat-selection-list>
-  
-            </mat-expansion-panel>
-          </mat-accordion>
-        </mat-card-content>
-  
-        <mat-card-actions>
-          <button
-            mat-raised-button
-            color="accent"          
-            (click)="downloadCopies()"
-          >
-            Download
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    </div>
+                *ngFor="let episode of season; index as j"
+                [value]="j"
+              >
+                {{ seriesTitle }} &nbsp; {{ episode }}
+              </mat-list-option>
+            </mat-selection-list>
+
+          </mat-expansion-panel>
+        </mat-accordion>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="downloadCopies()"
+        >
+          Download
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </div>
-  
+</div>

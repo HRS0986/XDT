@@ -1,34 +1,33 @@
 <div class="copy-select-section" *ngIf="!showProgressBar">
-    <div class="options">
-      <h2>Select Copies To Download {{ movieTitle }}</h2>
-  
-      <mat-card style="background-color: #424242; color: #dfe6e9">
-        <mat-card-content>
-          <mat-selection-list
-            #copies
-            [(ngModel)]="selectedCopiesIDs"
+  <div class="options">
+    <h2>Select Copies To Download {{ movieTitle }}</h2>
+
+    <mat-card style="background-color: #424242; color: #dfe6e9">
+      <mat-card-content>
+        <mat-selection-list
+          #copies
+          [(ngModel)]="selectedCopiesIDs"
+          style="color: #dfe6e9"
+        >
+          <mat-list-option
             style="color: #dfe6e9"
-          >
-            <mat-list-option
-              style="color: #dfe6e9"
-              color="accent"
-              *ngFor="let copy of copyNames; index as i"
-              [value]="i"
-            >
-              {{ copy }}
-            </mat-list-option>
-          </mat-selection-list>
-        </mat-card-content>
-        <mat-card-actions>
-          <button
-            mat-raised-button
             color="accent"
-            (click)="downloadCopies()"
+            *ngFor="let copy of copyNames; index as i"
+            [value]="i"
           >
-            Download
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    </div>
+            {{ copy }}
+          </mat-list-option>
+        </mat-selection-list>
+      </mat-card-content>
+      <mat-card-actions>
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="downloadCopies()"
+        >
+          Download
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </div>
-  
+</div>

@@ -52,8 +52,13 @@ export class AppComponent {
         img: ceylonStreamResult.img,
         site: siteName
       };
-      this.autoCompleteSearchResult.push(autoCompleteResult);
+
+      const exist = this.autoCompleteSearchResult.some(result => result.url === autoCompleteResult.url)
+      if (!exist) {
+        this.autoCompleteSearchResult.push(autoCompleteResult);
+      }
     }
+    
   }
 
   clickOnAutoComplete(url: string): void {
